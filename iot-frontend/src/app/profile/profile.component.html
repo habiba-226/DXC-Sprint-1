@@ -1,0 +1,164 @@
+<div class="profile-wrapper">
+  <div class="noise-overlay"></div>
+  <div class="grid-bg"></div>
+
+  @if (isLoading) {
+    <div class="loading-screen">
+      <div class="spinner"></div>
+      <p>Loading profile...</p>
+    </div>
+  } @else if (errorMessage) {
+    <div class="error-screen"><p>{{ errorMessage }}</p></div>
+  } @else if (user) {
+    <div class="profile-layout">
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="brand">
+          <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+            <circle cx="16" cy="16" r="14" stroke="#FF6B35" stroke-width="2"/>
+            <path d="M10 16 L16 10 L22 16 L16 22 Z" fill="#FF6B35"/>
+          </svg>
+          <span class="brand-name">IoT Monitor</span>
+        </div>
+
+        <nav class="side-nav">
+          <a routerLink="/home" class="nav-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+            </svg>
+            Dashboard
+          </a>
+          <a class="nav-item active">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+            Profile
+          </a>
+        </nav>
+
+        <button class="logout-btn" (click)="logout()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          Sign out
+        </button>
+      </aside>
+
+      <!-- Main -->
+      <main class="main-content">
+        <header class="page-header">
+          <h1 class="page-title">Profile</h1>
+          <p class="page-subtitle">Manage your account information</p>
+        </header>
+
+        <!-- Avatar Card -->
+        <div class="card avatar-card">
+          <div class="avatar-section">
+            <div class="avatar-container">
+              <div class="avatar-ring">
+                @if (newAvatarPreview || user.profilePicture) {
+                  <img [src]="newAvatarPreview || user.profilePicture" alt="Profile" class="avatar-img"/>
+                } @else {
+                  <div class="avatar-initials">{{ initials }}</div>
+                }
+              </div>
+              <div class="avatar-status"></div>
+            </div>
+            <div class="avatar-info">
+              <h2 class="user-full-name">{{ user.firstName }} {{ user.lastName }}</h2>
+              <p class="user-email-display">{{ user.email }}</p>
+              <label class="change-avatar-btn" for="avatar-upload">
+                @if (isAvatarLoading) { <span class="btn-loader-sm"></span> }
+                @else {
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                    <circle cx="12" cy="13" r="4"/>
+                  </svg>
+                }
+                Change photo
+              </label>
+              <input id="avatar-upload" type="file" accept="image/*" (change)="onAvatarChange($event)" hidden/>
+            </div>
+          </div>
+          @if (avatarSuccess) { <div class="banner success-banner">✓ {{ avatarSuccess }}</div> }
+          @if (avatarError)   { <div class="banner error-banner">{{ avatarError }}</div> }
+        </div>
+
+        <!-- Info Card -->
+        <div class="card">
+          <h3 class="card-title">Account Details</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">First name</span>
+              <span class="info-value">{{ user.firstName }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Last name</span>
+              <span class="info-value">{{ user.lastName }}</span>
+            </div>
+            <div class="info-item full-width">
+              <span class="info-label">Email address</span>
+              <span class="info-value">{{ user.email }}</span>
+            </div>
+            <div class="info-item full-width">
+              <span class="info-label">Password</span>
+              <span class="info-value password-dots">••••••••</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Password Card -->
+        <div class="card">
+          <div class="card-header-row">
+            <h3 class="card-title">Change Password</h3>
+            <button class="toggle-btn" (click)="showPasswordForm = !showPasswordForm">
+              {{ showPasswordForm ? 'Cancel' : 'Change' }}
+            </button>
+          </div>
+
+          @if (showPasswordForm) {
+            <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()" novalidate style="margin-top:1.25rem">
+              <div class="field-group">
+                <label class="field-label">Current password</label>
+                <div class="input-wrapper">
+                  <input [type]="showCurrentPassword ? 'text' : 'password'" formControlName="currentPassword" placeholder="Enter current password"/>
+                  <button type="button" class="toggle-password" (click)="showCurrentPassword = !showCurrentPassword">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </button>
+                </div>
+                <span class="field-error" *ngIf="passwordForm.get('currentPassword')!.invalid && passwordForm.get('currentPassword')!.touched">Required.</span>
+              </div>
+
+              <div class="field-group">
+                <label class="field-label">New password</label>
+                <div class="input-wrapper">
+                  <input [type]="showNewPassword ? 'text' : 'password'" formControlName="newPassword" placeholder="At least 6 characters"/>
+                  <button type="button" class="toggle-password" (click)="showNewPassword = !showNewPassword">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </button>
+                </div>
+                <span class="field-error" *ngIf="passwordForm.get('newPassword')!.invalid && passwordForm.get('newPassword')!.touched">Min 6 characters.</span>
+              </div>
+
+              @if (passwordError) { <div class="banner error-banner">{{ passwordError }}</div> }
+
+              <button type="submit" class="btn-primary" [disabled]="isPasswordLoading">
+                @if (isPasswordLoading) { <span class="btn-loader"></span> Updating... }
+                @else { Update Password }
+              </button>
+            </form>
+          }
+
+          @if (passwordSuccess) { <div class="banner success-banner">✓ {{ passwordSuccess }}</div> }
+        </div>
+      </main>
+    </div>
+  }
+</div>
