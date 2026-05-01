@@ -33,6 +33,7 @@ export class SignupComponent {
   errorMessage = '';
   successMessage = '';
   showPassword = false;
+  showConfirmPassword = false;
   previewUrl: string | null = null;
 
   get firstName() { return this.signupForm.get('firstName')!; }
@@ -64,21 +65,48 @@ export class SignupComponent {
   }
 
   onSubmit(): void {
-    if (this.signupForm.invalid) { this.signupForm.markAllAsTouched(); return; }
+    if (this.signupForm.invalid) { 
+      this.signupForm.markAllAsTouched(); 
+      return; 
+    }
+
     this.isLoading = true;
     this.errorMessage = '';
     this.successMessage = '';
 
+    const { email, password } = this.signupForm.value;
+
+    // 1. Create the account
     this.auth.signup(this.signupForm.value as any).subscribe({
       next: () => {
-        this.isLoading = false;
-        this.successMessage = 'Account created! Redirecting to login...';
-        setTimeout(() => this.router.navigate(['/login']), 2000);
+        this.successMessage = 'Account created! Logging you in...';
+
+        // 2. Immediately call Login with the same credentials
+        this.auth.login({ email: email!, password: password! }).subscribe({
+          next: () => {
+            // 3. Fetch the profile data so the Home page has the initials/photo
+            this.auth.fetchAndStoreProfile(email!).subscribe({
+              next: () => {
+                this.isLoading = false;
+                // 4. Redirect to Home and clear history so they can't go "Back" to Signup
+                this.router.navigate(['/home'], { replaceUrl: true });
+              }
+            });
+          },
+          error: () => {
+            this.isLoading = false;
+            this.errorMessage = 'Account created, but auto-login failed. Please sign in manually.';
+            setTimeout(() => this.router.navigate(['/login']), 2000);
+          }
+        });
       },
       error: (err) => {
         this.isLoading = false;
-        if (err.status === 409) this.errorMessage = 'An account with this email already exists.';
-        else this.errorMessage = 'Internal error occurred. Please try again.';
+        if (err.status === 409) {
+          this.errorMessage = 'An account with this email already exists.';
+        } else {
+          this.errorMessage = 'Internal error occurred. Please try again.';
+        }
       }
     });
   }

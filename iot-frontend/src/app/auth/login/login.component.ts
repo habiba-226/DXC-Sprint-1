@@ -47,7 +47,15 @@ export class LoginComponent {
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = 'Invalid email or password.';
+        
+        if (err.status === 429) { 
+          // Catching the 429 Too Many Requests
+          this.errorMessage = err.error || 'Account locked! Please wait 5 minutes.';
+        } else if (err.status === 401 || err.status === 404) {
+          this.errorMessage = 'Invalid email or password.';
+        } else {
+          this.errorMessage = 'An internal error occurred. Please try again.';
+        }
       }
     });
   }

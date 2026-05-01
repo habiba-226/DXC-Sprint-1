@@ -137,7 +137,12 @@
               <div class="field-group">
                 <label class="field-label">New password</label>
                 <div class="input-wrapper">
-                  <input [type]="showNewPassword ? 'text' : 'password'" formControlName="newPassword" placeholder="At least 6 characters"/>
+                <input 
+                  id="newPassword" 
+                  [type]="showNewPassword ? 'text' : 'password'" 
+                  formControlName="newPassword" 
+                  placeholder="Min 8 chars, 1 uppercase, 1 number, 1 special char" 
+                />
                   <button type="button" class="toggle-password" (click)="showNewPassword = !showNewPassword">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>

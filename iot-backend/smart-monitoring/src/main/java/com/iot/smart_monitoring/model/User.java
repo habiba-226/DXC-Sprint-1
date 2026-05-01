@@ -33,4 +33,7 @@ public class User {
     @Transient
     private String confirmPassword;
 
+    private Integer failedAttempts = 0;
+
+    private java.time.LocalDateTime lockTime;
 }

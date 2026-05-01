@@ -87,10 +87,12 @@ export class ProfileComponent implements OnInit {
   }
 
   onChangePassword(): void {
-    if (this.passwordForm.invalid || !this.user) { this.passwordForm.markAllAsTouched(); return; }
-    this.isPasswordLoading = true;
     this.passwordError = '';
     this.passwordSuccess = '';
+
+    if (this.passwordForm.invalid || !this.user) { this.passwordForm.markAllAsTouched(); return; }
+    
+    this.isPasswordLoading = true;
 
     this.auth.updateProfile({
       email: this.user.email,
@@ -112,7 +114,7 @@ export class ProfileComponent implements OnInit {
         if (err.status === 401 || err.status === 400) {
           this.passwordError = err.error || 'Invalid request.';
         } else {
-          this.passwordError = 'An internal error occurred. Please try again.';
+          this.passwordError = err.error || 'Failed to update password.';
         }
       }
     });
