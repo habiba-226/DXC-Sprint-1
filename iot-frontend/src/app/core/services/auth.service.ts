@@ -9,6 +9,7 @@ export interface SignupPayload {
   lastName: string;
   email: string;
   password: string;
+  confirmPassword?: string; 
   profilePicture?: string;
 }
 
@@ -31,6 +32,7 @@ export interface UpdateProfilePayload {
   firstName?: string;
   lastName?: string;
   password?: string;
+  confirmPassword?: string;
   profilePicture?: string;
 }
 

@@ -20,8 +20,13 @@ export class SignupComponent {
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
-    profilePicture: ['']
+    password: ['', [
+      Validators.required, 
+      Validators.minLength(8), 
+      Validators.pattern(/^(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&+=]).*$/)
+    ]],
+    confirmPassword: ['', Validators.required],
+    profilePicture: ['', Validators.required]
   });
 
   isLoading = false;
@@ -34,7 +39,7 @@ export class SignupComponent {
   get lastName()  { return this.signupForm.get('lastName')!; }
   get email()     { return this.signupForm.get('email')!; }
   get password()  { return this.signupForm.get('password')!; }
-
+  get confirmPassword() { return this.signupForm.get('confirmPassword')!; }
   onFileChange(event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
@@ -45,6 +50,17 @@ export class SignupComponent {
       this.signupForm.patchValue({ profilePicture: base64 });
     };
     reader.readAsDataURL(file);
+  }
+
+  removeAvatar(event: Event): void {
+    event.stopPropagation(); // Prevents the file browser from opening
+    event.preventDefault();  
+    
+    this.previewUrl = null;
+    this.signupForm.patchValue({ profilePicture: '' });
+    
+    const fileInput = document.getElementById('avatar-input') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
   }
 
   onSubmit(): void {

@@ -21,7 +21,11 @@ export class ProfileComponent implements OnInit {
 
   passwordForm = this.fb.group({
     currentPassword: ['', [Validators.required]],
-    newPassword: ['', [Validators.required, Validators.minLength(6)]]
+    newPassword: ['', [
+      Validators.required, 
+      Validators.minLength(8),
+      Validators.pattern(/^(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&+=]).*$/)
+    ]]
   });
   showPasswordForm = false;
   isPasswordLoading = false;
@@ -67,7 +71,16 @@ export class ProfileComponent implements OnInit {
           if (this.user) this.user.profilePicture = base64;
           setTimeout(() => (this.avatarSuccess = ''), 3000);
         },
-        error: () => { this.isAvatarLoading = false; this.avatarError = 'Failed to update photo.'; }
+        error: (err: any) => {
+          this.isAvatarLoading = false;
+          // If the backend sent a specific message string, show it.
+          // Otherwise, fallback to a generic error message.
+          if (err.status === 401 || err.status === 400) {
+            this.avatarError = err.error || 'Invalid request.';
+          } else {
+            this.avatarError = 'An internal error occurred. Please try again.';
+          }
+        }
       });
     };
     reader.readAsDataURL(file);
@@ -81,7 +94,8 @@ export class ProfileComponent implements OnInit {
 
     this.auth.updateProfile({
       email: this.user.email,
-      password: this.passwordForm.value.newPassword as string
+      password: this.passwordForm.value.newPassword as string,
+      confirmPassword: this.passwordForm.value.currentPassword as string
     }).subscribe({
       next: () => {
         this.isPasswordLoading = false;
@@ -92,7 +106,14 @@ export class ProfileComponent implements OnInit {
       },
       error: (err: any) => {
         this.isPasswordLoading = false;
-        this.passwordError = err.status === 401 ? 'Unauthorized.' : 'Internal error occurred.';
+        
+        // If the backend sent a specific message string, show it. 
+        // Otherwise, fallback to a generic error message.
+        if (err.status === 401 || err.status === 400) {
+          this.passwordError = err.error || 'Invalid request.';
+        } else {
+          this.passwordError = 'An internal error occurred. Please try again.';
+        }
       }
     });
   }

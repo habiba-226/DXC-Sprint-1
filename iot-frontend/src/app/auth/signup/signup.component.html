@@ -18,7 +18,7 @@
 
     <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" novalidate>
 
-      <!-- Avatar Upload -->
+<!-- Avatar Upload -->
       <div class="avatar-upload-group">
         <label for="avatar-input" class="avatar-label">
           <div class="avatar-preview" [class.has-image]="previewUrl">
@@ -31,19 +31,38 @@
                 </svg>
               </div>
             }
-            <div class="avatar-overlay">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                <circle cx="12" cy="13" r="4"/>
-              </svg>
-            </div>
+            
+            <!-- Trash Icon Overlay (Only shows when an image is present) -->
+            @if (previewUrl) {
+              <button type="button" class="remove-avatar-icon" (click)="removeAvatar($event)" title="Remove photo">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  <line x1="10" y1="11" x2="10" y2="17"></line>
+                  <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+              </button>
+            } @else {
+              <div class="avatar-overlay">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                  <circle cx="12" cy="13" r="4"/>
+                </svg>
+              </div>
+            }
           </div>
-          <span class="avatar-hint">Profile picture (optional)</span>
+          <span class="avatar-hint">Profile picture (required)</span>
         </label>
-        <input id="avatar-input" type="file" accept="image/*" (change)="onFileChange($event)" hidden />
+        
+        <input id="avatar-input" type="file" accept="image/jpeg, image/png, image/jpg" (change)="onFileChange($event)" hidden />
       </div>
 
       <!-- Name Row -->
+      <div style="text-align: center; margin-bottom: 1rem;">
+        <span class="field-error" *ngIf="signupForm.get('profilePicture')?.invalid && signupForm.get('profilePicture')?.touched">
+          Please upload a profile picture.
+        </span>
+      </div>
       <div class="field-row">
         <div class="field-group">
           <label class="field-label" for="firstName">First name</label>
@@ -75,6 +94,7 @@
         </span>
       </div>
 
+<!-- Password -->
       <div class="field-group">
         <label class="field-label" for="password">Password</label>
         <div class="input-wrapper" [class.error]="password.invalid && password.touched">
@@ -82,16 +102,36 @@
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
             <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
           </svg>
-          <input id="password" [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="At least 6 characters"/>
+          <input id="password" [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="Min 8 chars, 1 uppercase, 1 number, 1 special char"/>
           <button type="button" class="toggle-password" (click)="showPassword = !showPassword">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
             </svg>
           </button>
         </div>
+        <!-- THIS IS WHERE WE EXPLAIN THE RULES -->
         <span class="field-error" *ngIf="password.invalid && password.touched">
           @if (password.errors?.['required']) { Password is required. }
-          @else if (password.errors?.['minlength']) { Minimum 6 characters. }
+          @else if (password.errors?.['minlength']) { Minimum 8 characters required. }
+          @else if (password.errors?.['pattern']) { Must contain an uppercase letter, a number, and a special character (@#$%^&+=). }
+        </span>
+      </div>
+
+      <!-- Confirm Password (NEW BOX) -->
+      <div class="field-group">
+        <label class="field-label" for="confirmPassword">Confirm Password</label>
+        <div class="input-wrapper" [class.error]="confirmPassword.invalid && confirmPassword.touched">
+          <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <input id="confirmPassword" [type]="showPassword ? 'text' : 'password'" formControlName="confirmPassword" placeholder="Repeat your password"/>
+        </div>
+        <span class="field-error" *ngIf="confirmPassword.invalid && confirmPassword.touched">
+          Please confirm your password.
+        </span>
+        <span class="field-error" *ngIf="signupForm.get('password')?.value !== signupForm.get('confirmPassword')?.value && confirmPassword.touched">
+          Passwords do not match.
         </span>
       </div>
 

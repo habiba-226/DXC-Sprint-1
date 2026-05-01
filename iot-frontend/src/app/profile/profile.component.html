@@ -80,7 +80,7 @@
                 }
                 Change photo
               </label>
-              <input id="avatar-upload" type="file" accept="image/*" (change)="onAvatarChange($event)" hidden/>
+              <input id="avatar-upload" type="file" accept="image/jpeg, image/png, image/jpg" (change)="onAvatarChange($event)" hidden/>
             </div>
           </div>
           @if (avatarSuccess) { <div class="banner success-banner">✓ {{ avatarSuccess }}</div> }
@@ -144,7 +144,11 @@
                     </svg>
                   </button>
                 </div>
-                <span class="field-error" *ngIf="passwordForm.get('newPassword')!.invalid && passwordForm.get('newPassword')!.touched">Min 6 characters.</span>
+                <span class="field-error" *ngIf="passwordForm.get('newPassword')!.invalid && passwordForm.get('newPassword')!.touched">
+                  @if (passwordForm.get('newPassword')!.errors?.['minlength']) { Min 8 characters. }
+                  @else if (passwordForm.get('newPassword')!.errors?.['pattern']) { Must contain uppercase, number, and special char. }
+                  @else { Required. }
+                </span>
               </div>
 
               @if (passwordError) { <div class="banner error-banner">{{ passwordError }}</div> }

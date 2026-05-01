@@ -25,12 +25,12 @@ public class AuthController {
     }
 
     @GetMapping("/profile")
-    public User getProfile(@RequestParam String email) {
+    public ResponseEntity<?> getProfile(@RequestParam String email) {
         return userService.getProfile(email);
     }
 
     @PutMapping("/profile")
-    public String updateProfile(@RequestBody User user) {
-        return userService.updateProfile(user);
+    public ResponseEntity<String> updateProfile(@RequestBody User updatedUser) {
+        return userService.updateProfile(updatedUser);
     }
 }

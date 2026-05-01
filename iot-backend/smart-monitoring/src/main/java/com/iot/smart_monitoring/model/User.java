@@ -1,4 +1,5 @@
 package com.iot.smart_monitoring.model;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,5 +25,12 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(columnDefinition = "LONGTEXT")
     private String profilePicture;
+
+    @Setter
+    @Getter
+    @Transient
+    private String confirmPassword;
+
 }
