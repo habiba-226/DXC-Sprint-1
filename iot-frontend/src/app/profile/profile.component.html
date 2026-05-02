@@ -121,42 +121,70 @@
 
           @if (showPasswordForm) {
             <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()" novalidate style="margin-top:1.25rem">
+              
               <div class="field-group">
                 <label class="field-label">Current password</label>
                 <div class="input-wrapper">
-                  <input [type]="showCurrentPassword ? 'text' : 'password'" formControlName="currentPassword" placeholder="Enter current password"/>
+                  <input 
+                    [type]="showCurrentPassword ? 'text' : 'password'" 
+                    formControlName="currentPassword" 
+                    placeholder="Enter current password"
+                  />
                   <button type="button" class="toggle-password" (click)="showCurrentPassword = !showCurrentPassword">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
                     </svg>
                   </button>
                 </div>
-                <span class="field-error" *ngIf="passwordForm.get('currentPassword')!.invalid && passwordForm.get('currentPassword')!.touched">Required.</span>
+                <span class="field-error" 
+                  *ngIf="passwordForm.get('currentPassword')!.invalid && passwordForm.get('currentPassword')!.touched">
+                  Current password is required.
+                </span>
               </div>
 
               <div class="field-group">
                 <label class="field-label">New password</label>
                 <div class="input-wrapper">
-                <input 
-                  id="newPassword" 
-                  [type]="showNewPassword ? 'text' : 'password'" 
-                  formControlName="newPassword" 
-                  placeholder="Min 8 chars, 1 uppercase, 1 number, 1 special char" 
-                />
+                  <input 
+                    id="newPassword" 
+                    [type]="showNewPassword ? 'text' : 'password'" 
+                    formControlName="newPassword" 
+                    placeholder="Min 8 chars, 1 uppercase, 1 number, 1 special char" 
+                  />
                   <button type="button" class="toggle-password" (click)="showNewPassword = !showNewPassword">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
                     </svg>
                   </button>
                 </div>
-                <span class="field-error" *ngIf="passwordForm.get('newPassword')!.invalid && passwordForm.get('newPassword')!.touched">
-                  @if (passwordForm.get('newPassword')!.errors?.['minlength']) { Min 8 characters. }
-                  @else if (passwordForm.get('newPassword')!.errors?.['pattern']) { Must contain uppercase, number, and special char. }
-                  @else { Required. }
+
+                <!-- Field-level errors -->
+                <span class="field-error" 
+                  *ngIf="passwordForm.get('newPassword')!.invalid && passwordForm.get('newPassword')!.touched">
+                  @if (passwordForm.get('newPassword')!.errors?.['required']) {
+                    New password is required.
+                  } @else if (passwordForm.get('newPassword')!.errors?.['minlength']) {
+                    Password must be at least 8 characters.
+                  } @else if (passwordForm.get('newPassword')!.errors?.['pattern']) {
+                    Must contain uppercase, number, and special character.
+                  }
+                </span>
+
+                <!-- Same-password cross-field error -->
+                <span class="field-error"
+                  *ngIf="passwordForm.errors?.['samePassword'] && 
+                        passwordForm.get('newPassword')!.touched && 
+                        passwordForm.get('currentPassword')!.touched">
+                  New password cannot be the same as current password.
                 </span>
               </div>
 
-              @if (passwordError) { <div class="banner error-banner">{{ passwordError }}</div> }
+              <!-- Backend error banner -->
+              @if (passwordError) { 
+                <div class="banner error-banner">{{ passwordError }}</div> 
+              }
 
               <button type="submit" class="btn-primary" [disabled]="isPasswordLoading">
                 @if (isPasswordLoading) { <span class="btn-loader"></span> Updating... }
@@ -165,7 +193,9 @@
             </form>
           }
 
-          @if (passwordSuccess) { <div class="banner success-banner">✓ {{ passwordSuccess }}</div> }
+          @if (passwordSuccess) { 
+            <div class="banner success-banner">✓ {{ passwordSuccess }}</div> 
+          }
         </div>
       </main>
     </div>

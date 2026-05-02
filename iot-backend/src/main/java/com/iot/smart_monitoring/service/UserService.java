@@ -83,6 +83,10 @@ public class UserService {
 
         User existingUser = existingUserOpt.get();
 
+        if (existingUser.getFailedAttempts() == null) {
+            existingUser.setFailedAttempts(0);
+        }
+
         // 1. Is it locked?
         if (existingUser.getLockTime() != null) {
             if (existingUser.getLockTime().isAfter(LocalDateTime.now())) {

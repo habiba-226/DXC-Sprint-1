@@ -28,10 +28,7 @@ public class User {
     @Column(columnDefinition = "LONGTEXT")
     private String profilePicture;
 
-    @Setter
-    @Getter
-    @Transient
-    private String confirmPassword;
+    private transient String confirmPassword;
 
     private Integer failedAttempts = 0;
 

@@ -107,14 +107,12 @@ export class ProfileComponent implements OnInit {
         setTimeout(() => (this.passwordSuccess = ''), 4000);
       },
       error: (err: any) => {
-        this.isPasswordLoading = false;
-        
-        // If the backend sent a specific message string, show it. 
-        // Otherwise, fallback to a generic error message.
-        if (err.status === 401 || err.status === 400) {
+        if (err.status === 400) {
           this.passwordError = err.error || 'Invalid request.';
+        } else if (err.status === 401) {
+          this.passwordError = 'Current password is incorrect.';
         } else {
-          this.passwordError = err.error || 'Failed to update password.';
+          this.passwordError = 'An internal error occurred. Please try again.'; 
         }
       }
     });

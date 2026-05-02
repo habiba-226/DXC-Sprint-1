@@ -1,1 +1,8 @@
 @use '../../../styles/auth-shared' as *;
+
+.locked-banner {
+  @extend .error-banner;
+  background: rgba(255, 107, 53, 0.1);
+  border-color: #FF6B35;
+  color: #FF6B35;
+}

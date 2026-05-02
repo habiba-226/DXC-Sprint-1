@@ -58,16 +58,19 @@
       </div>
 
       @if (errorMessage) {
-        <div class="error-banner">
+        <div [class]="isLocked ? 'error-banner locked-banner' : 'error-banner'">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
           </svg>
           {{ errorMessage }}
         </div>
       }
 
-      <button type="submit" class="btn-primary" [disabled]="isLoading">
+      <button type="submit" class="btn-primary" [disabled]="isLoading || isLocked">
         @if (isLoading) { <span class="btn-loader"></span> Signing in... }
+        @else if (isLocked) { Account Locked }
         @else { Sign In }
       </button>
     </form>

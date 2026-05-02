@@ -1,3 +1,36 @@
+# Smart IoT Monitoring System - Frontend
+
+Angular frontend for the Smart IoT Monitoring System.
+
+## Prerequisites
+
+- WSL / Linux with Docker installed
+- Start Docker before running any commands:
+```bash
+  sudo service docker start
+```
+
+## Running the Project (Docker)
+
+The frontend runs as part of the full stack. Clone the backend repo and follow the instructions in its README to run all containers together using `run.sh`.
+
+## For DevOps — Build & Push Frontend Image
+
+Only needed when frontend code changes are made:
+
+```bash
+chmod +x build-and-push.sh
+./build-and-push.sh
+```
+
+## Docker Hub Image
+
+| Service | Image |
+|---|---|
+| Frontend | `salmafayed/frontend-service:v1.0` |
+
+---
+
 # IotFrontend
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.8.

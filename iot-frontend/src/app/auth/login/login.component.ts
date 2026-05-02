@@ -24,6 +24,7 @@ export class LoginComponent {
   isLoading = false;
   errorMessage = '';
   showPassword = false;
+  isLocked = false; 
 
   get email() { return this.loginForm.get('email')!; }
   get password() { return this.loginForm.get('password')!; }
@@ -34,10 +35,9 @@ export class LoginComponent {
     this.isLoading = true;
     this.errorMessage = '';
 
-    // 1. Call the actual backend service
     this.auth.login(this.loginForm.value as any).subscribe({
       next: (response) => {
-        // 2. The backend returns "Login successful", now fetch the user profile
+        this.isLocked = false; // reset on success
         this.auth.fetchAndStoreProfile(this.loginForm.value.email!).subscribe({
           next: () => {
             this.isLoading = false;
@@ -48,12 +48,14 @@ export class LoginComponent {
       error: (err) => {
         this.isLoading = false;
         
-        if (err.status === 429) { 
-          // Catching the 429 Too Many Requests
+        if (err.status === 429) {
+          this.isLocked = true; // lock the UI
           this.errorMessage = err.error || 'Account locked! Please wait 5 minutes.';
         } else if (err.status === 401 || err.status === 404) {
+          this.isLocked = false;
           this.errorMessage = 'Invalid email or password.';
         } else {
+          this.isLocked = false;
           this.errorMessage = 'An internal error occurred. Please try again.';
         }
       }
